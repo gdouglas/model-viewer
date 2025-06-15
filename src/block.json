@@ -1,0 +1,76 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "model-viewer-block/model-viewer",
+	"version": "1.0.0",
+	"title": "3D Model Viewer",
+	"category": "media",
+	"icon": "format-video",
+	"description": "Display 3D models using Google's model-viewer component with accessibility and multilingual support",
+	"example": {},
+	"supports": {
+		"html": false,
+		"align": true,
+		"alignWide": true,
+		"spacing": {
+			"margin": true,
+			"padding": true
+		}
+	},
+	"textdomain": "model-viewer-block",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"attributes": {
+		"src": {
+			"type": "string",
+			"default": ""
+		},
+		"alt": {
+			"type": "string",
+			"default": ""
+		},
+		"poster": {
+			"type": "string",
+			"default": ""
+		},
+		"width": {
+			"type": "string",
+			"default": "100%"
+		},
+		"height": {
+			"type": "string",
+			"default": "400px"
+		},
+		"autoRotate": {
+			"type": "boolean",
+			"default": false
+		},
+		"cameraControls": {
+			"type": "boolean",
+			"default": true
+		},
+		"arMode": {
+			"type": "boolean",
+			"default": false
+		},
+		"loading": {
+			"type": "string",
+			"default": "auto",
+			"enum": ["auto", "lazy", "eager"]
+		},
+		"reveal": {
+			"type": "string",
+			"default": "auto",
+			"enum": ["auto", "interaction", "manual"]
+		},
+		"showControls": {
+			"type": "boolean",
+			"default": true
+		},
+		"showInstructions": {
+			"type": "boolean",
+			"default": true
+		}
+	}
+} 

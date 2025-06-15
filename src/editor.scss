@@ -1,0 +1,246 @@
+/**
+ * The following styles get applied inside the editor only.
+ *
+ * Replace them with your own styles or remove the file completely.
+ */
+
+.model-viewer-block-editor {
+	// Editor-specific container styles
+	position: relative;
+	padding: 16px;
+	border: 1px solid #e0e0e0;
+	border-radius: 8px;
+	background-color: #fff;
+
+	// Model viewer container in editor
+	.model-viewer-container {
+		position: relative;
+		background-color: #f8f9fa;
+		border-radius: 4px;
+		overflow: hidden;
+
+		// Loading state in editor
+		.model-viewer-loading {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			color: #666;
+			font-size: 14px;
+			z-index: 2;
+			background: rgba(255, 255, 255, 0.9);
+			padding: 8px 12px;
+			border-radius: 4px;
+		}
+
+		// Model viewer in editor
+		model-viewer {
+			width: 100%;
+			min-height: 300px;
+			background-color: transparent;
+			border-radius: 4px;
+
+			// Editor-specific focus styles
+			&:focus {
+				outline: 2px solid #007cba;
+				outline-offset: 2px;
+			}
+		}
+
+		// Action buttons container
+		.model-viewer-actions {
+			position: absolute;
+			top: 8px;
+			right: 8px;
+			display: flex;
+			gap: 8px;
+			opacity: 0;
+			transition: opacity 0.2s ease;
+			z-index: 3;
+
+			.components-button {
+				background: rgba(255, 255, 255, 0.95);
+				backdrop-filter: blur(4px);
+				border: 1px solid rgba(0, 0, 0, 0.1);
+				border-radius: 4px;
+				padding: 6px 12px;
+				font-size: 12px;
+				
+				&:hover {
+					background: #fff;
+					border-color: #007cba;
+				}
+
+				&.is-destructive {
+					color: #d63638;
+					
+					&:hover {
+						color: #d63638;
+						border-color: #d63638;
+					}
+				}
+			}
+		}
+
+		// Show actions on hover
+		&:hover .model-viewer-actions {
+			opacity: 1;
+		}
+	}
+
+	// Placeholder styles
+	.components-placeholder {
+		min-height: 200px;
+		border: 2px dashed #ccc;
+		background-color: #fafafa;
+		
+		.components-placeholder__label {
+			color: #1e1e1e;
+			font-weight: 600;
+		}
+
+		.components-placeholder__instructions {
+			color: #757575;
+			margin-bottom: 16px;
+		}
+
+		.components-button.is-primary {
+			background-color: #007cba;
+			border-color: #007cba;
+			
+			&:hover {
+				background-color: #005a87;
+				border-color: #005a87;
+			}
+		}
+	}
+
+	// Notice styles in editor
+	.components-notice {
+		margin: 8px 0;
+		
+		&.is-error {
+			border-left-color: #d63638;
+		}
+	}
+}
+
+// Inspector controls styling
+.block-editor-block-inspector {
+	.components-panel__body {
+		// Model settings panel
+		&[aria-expanded="true"] {
+			.components-base-control {
+				margin-bottom: 16px;
+				
+				.components-base-control__label {
+					font-weight: 600;
+					margin-bottom: 4px;
+				}
+
+				.components-base-control__help {
+					font-size: 12px;
+					color: #757575;
+					margin-top: 4px;
+				}
+			}
+
+			// Toggle controls
+			.components-toggle-control {
+				.components-toggle-control__label {
+					font-weight: 500;
+				}
+			}
+
+			// Select controls
+			.components-select-control {
+				select {
+					border-color: #949494;
+					
+					&:focus {
+						border-color: #007cba;
+						box-shadow: 0 0 0 1px #007cba;
+					}
+				}
+			}
+
+			// Text controls
+			.components-text-control__input {
+				border-color: #949494;
+				
+				&:focus {
+					border-color: #007cba;
+					box-shadow: 0 0 0 1px #007cba;
+				}
+			}
+
+			// Media upload buttons
+			.components-button {
+				&.is-secondary {
+					border-color: #949494;
+					
+					&:hover {
+						border-color: #007cba;
+						color: #007cba;
+					}
+				}
+				
+				&.is-link.is-destructive {
+					color: #d63638;
+					text-decoration: none;
+					
+					&:hover {
+						color: #d63638;
+						text-decoration: underline;
+					}
+				}
+			}
+		}
+	}
+}
+
+// Block toolbar styles
+.block-editor-block-toolbar {
+	.components-toolbar-group {
+		.components-button {
+			&.is-pressed {
+				background-color: #007cba;
+				color: #fff;
+			}
+		}
+	}
+}
+
+// Responsive design for editor
+@media (max-width: 782px) {
+	.model-viewer-block-editor {
+		padding: 12px;
+		
+		.model-viewer-container {
+			model-viewer {
+				min-height: 250px;
+			}
+			
+			.model-viewer-actions {
+				position: relative;
+				top: auto;
+				right: auto;
+				opacity: 1;
+				justify-content: center;
+				margin-top: 12px;
+				background: none;
+				
+				.components-button {
+					background: #f0f0f0;
+					
+					&:hover {
+						background: #e0e0e0;
+					}
+				}
+			}
+		}
+	}
+} 

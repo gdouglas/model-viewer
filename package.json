@@ -1,0 +1,30 @@
+{
+  "name": "model-viewer-block",
+  "version": "1.0.0",
+  "description": "A WordPress block plugin for viewing 3D models using Google's model-viewer component",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "wp-scripts build",
+    "format": "wp-scripts format",
+    "lint:css": "wp-scripts lint-style",
+    "lint:js": "wp-scripts lint-js",
+    "packages-update": "wp-scripts packages-update",
+    "plugin-zip": "wp-scripts plugin-zip",
+    "start": "wp-scripts start"
+  },
+  "keywords": [
+    "wordpress",
+    "block",
+    "3d",
+    "model-viewer",
+    "gutenberg"
+  ],
+  "author": "",
+  "license": "GPL-2.0-or-later",
+  "devDependencies": {
+    "@wordpress/scripts": "^30.18.0"
+  },
+  "dependencies": {
+    "@google/model-viewer": "^3.5.0"
+  }
+}
