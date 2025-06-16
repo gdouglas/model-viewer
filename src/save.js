@@ -104,19 +104,8 @@ export default function save( { attributes } ) {
 
 	return (
 		<div { ...blockProps }>
-			{ showInstructions && cameraControls && (
-				<div className="model-viewer-instructions" role="region" aria-label="3D Model Controls">
-					<div className="instructions-content">
-						<h4>How to interact with this 3D model:</h4>
-						<ul>
-							<li><strong>Mouse:</strong> Click and drag to rotate • Scroll to zoom • Right-click and drag to pan</li>
-							<li><strong>Touch:</strong> Tap and drag to rotate • Pinch to zoom • Two-finger drag to pan</li>
-							<li><strong>Keyboard:</strong> Arrow keys to rotate • page up/down to zoom</li>
-						</ul>
-					</div>
-				</div>
-			) }
-			<model-viewer id={modelViewerId} { ...allModelViewerProps }>
+			<figure className="model-viewer-container">
+				<model-viewer id={modelViewerId} { ...allModelViewerProps }>
 				<div 
 					slot="fallback"
 					style={{
@@ -210,7 +199,20 @@ export default function save( { attributes } ) {
 						<div>Loading 3D model...</div>
 					</div>
 				) }
-			</model-viewer>
+				</model-viewer>
+				{ showInstructions && cameraControls && (
+					<figcaption className="model-viewer-instructions">
+						<div className="instructions-content">
+							<h3 className="model-viewer-instructions-heading">How to interact with this 3D model:</h3>
+							<ul>
+								<li><strong>Mouse:</strong> Click and drag to rotate • Scroll to zoom • Right-click and drag to pan</li>
+								<li><strong>Touch:</strong> Tap and drag to rotate • Pinch to zoom • Two-finger drag to pan</li>
+								<li><strong>Keyboard:</strong> Arrow keys to rotate • page up/down to zoom</li>
+							</ul>
+						</div>
+					</figcaption>
+				) }
+			</figure>
 			
 			{ loadingMode === 'interaction' && (
 				<script

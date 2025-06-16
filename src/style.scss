@@ -20,6 +20,12 @@
 		}
 	}
 
+	// Figure element styles
+	.model-viewer-container {
+		margin: 0;
+		position: relative;
+	}
+
 	// Model viewer element
 	model-viewer {
 		width: 100%;
@@ -128,22 +134,24 @@
 		font-size: 14px;
 	}
 
-	// Control instructions
+	// Control instructions (figcaption)
 	.model-viewer-instructions {
 		background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 		border: 1px solid #dee2e6;
 		border-radius: 8px;
-		margin-bottom: 16px;
+		margin-top: 16px;
+		margin-bottom: 0;
 		padding: 16px;
 		font-size: 14px;
 		color: #495057;
 
 		.instructions-content {
-			h4 {
+			.model-viewer-instructions-heading {
 				margin: 0 0 12px 0;
 				font-size: 16px;
 				font-weight: 600;
 				color: #212529;
+				line-height: 1.4;
 			}
 
 			ul {
@@ -177,11 +185,11 @@
 		// Responsive design
 		@media (max-width: 768px) {
 			padding: 12px;
-			font-size: 13px;
+			font-size: 16px;
 			border-radius: 6px;
 
 			.instructions-content {
-				h4 {
+				.model-viewer-instructions-heading {
 					font-size: 15px;
 					margin-bottom: 10px;
 				}
@@ -193,12 +201,12 @@
 		}
 
 		@media (max-width: 480px) {
-			margin-bottom: 12px;
+			margin-top: 12px;
 			padding: 10px;
 			font-size: 12px;
 
 			.instructions-content {
-				h4 {
+				.model-viewer-instructions-heading {
 					font-size: 14px;
 					margin-bottom: 8px;
 				}
