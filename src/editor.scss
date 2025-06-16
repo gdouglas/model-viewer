@@ -89,6 +89,46 @@
 		&:hover .model-viewer-actions {
 			opacity: 1;
 		}
+
+		// Instructions in editor
+		.model-viewer-instructions {
+			background: linear-gradient(135deg, #f1f3f4 0%, #e8eaed 100%);
+			border: 1px solid #dadce0;
+			border-radius: 6px;
+			margin-bottom: 12px;
+			padding: 12px;
+			font-size: 13px;
+			color: #5f6368;
+
+			.instructions-content {
+				h4 {
+					margin: 0 0 8px 0;
+					font-size: 14px;
+					font-weight: 600;
+					color: #202124;
+				}
+
+				ul {
+					margin: 0;
+					padding-left: 16px;
+					list-style-type: disc;
+
+					li {
+						margin-bottom: 6px;
+						line-height: 1.4;
+
+						&:last-child {
+							margin-bottom: 0;
+						}
+
+						strong {
+							color: #1a73e8;
+							font-weight: 600;
+						}
+					}
+				}
+			}
+		}
 	}
 
 	// Placeholder styles

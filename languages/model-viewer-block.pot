@@ -172,4 +172,44 @@ msgstr ""
 
 #: src/edit.js:254
 msgid "Control when the model is revealed"
+msgstr ""
+
+#: src/edit.js:118
+msgid "3D Model Controls"
+msgstr ""
+
+#: src/edit.js:120
+msgid "How to interact with this 3D model:"
+msgstr ""
+
+#: src/edit.js:122
+msgid "Mouse:"
+msgstr ""
+
+#: src/edit.js:122
+msgid "Click and drag to rotate • Scroll to zoom • Right-click and drag to pan"
+msgstr ""
+
+#: src/edit.js:123
+msgid "Touch:"
+msgstr ""
+
+#: src/edit.js:123
+msgid "Tap and drag to rotate • Pinch to zoom • Two-finger drag to pan"
+msgstr ""
+
+#: src/edit.js:124
+msgid "Keyboard:"
+msgstr ""
+
+#: src/edit.js:124
+msgid "Arrow keys to rotate • page up/down to zoom"
+msgstr ""
+
+#: src/edit.js:233
+msgid "Show Control Instructions"
+msgstr ""
+
+#: src/edit.js:236
+msgid "Display instructions on how to interact with the 3D model"
 msgstr "" 

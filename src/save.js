@@ -15,6 +15,13 @@ import { useBlockProps } from '@wordpress/block-editor';
  *
  * @return {Element} Element to render.
  */
+/**
+ * Retrieves the translation of text.
+ *
+ * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-i18n/
+ */
+import { __ } from '@wordpress/i18n';
+
 export default function save( { attributes } ) {
 	const {
 		src,
@@ -26,7 +33,8 @@ export default function save( { attributes } ) {
 		cameraControls,
 		arMode,
 		loading,
-		reveal
+		reveal,
+		showInstructions
 	} = attributes;
 
 	const blockProps = useBlockProps.save( {
@@ -88,6 +96,18 @@ export default function save( { attributes } ) {
 
 	return (
 		<div { ...blockProps }>
+			{ showInstructions && cameraControls && (
+				<div className="model-viewer-instructions" role="region" aria-label="3D Model Controls">
+					<div className="instructions-content">
+						<h4>How to interact with this 3D model:</h4>
+						<ul>
+							<li><strong>Mouse:</strong> Click and drag to rotate • Scroll to zoom • Right-click and drag to pan</li>
+							<li><strong>Touch:</strong> Tap and drag to rotate • Pinch to zoom • Two-finger drag to pan</li>
+							<li><strong>Keyboard:</strong> Arrow keys to rotate • page up/down to zoom</li>
+						</ul>
+					</div>
+				</div>
+			) }
 			<model-viewer { ...allModelViewerProps }>
 				<div 
 					slot="fallback"
@@ -110,18 +130,22 @@ export default function save( { attributes } ) {
 					</p>
 				</div>
 				
-				<div 
-					slot="poster" 
-					style={{
-						display: 'flex',
-						alignItems: 'center',
-						justifyContent: 'center',
-						minHeight: '200px',
-						backgroundColor: '#f8f9fa'
-					}}
-				>
-					<div>Loading 3D model...</div>
-				</div>
+				{ ! poster && (
+					<div 
+						slot="poster" 
+						style={{
+							display: 'flex',
+							alignItems: 'center',
+							justifyContent: 'center',
+							minHeight: '200px',
+							backgroundColor: '#f8f9fa',
+							color: '#666',
+							fontSize: '14px'
+						}}
+					>
+						<div>Loading 3D model...</div>
+					</div>
+				) }
 			</model-viewer>
 		</div>
 	);

@@ -136,6 +136,18 @@ export default function Edit( { attributes, setAttributes } ) {
 						{__('Error loading 3D model. Please check the file format and try again.', 'model-viewer-block')}
 					</Notice>
 				)}
+				{showInstructions && cameraControls && (
+					<div className="model-viewer-instructions" role="region" aria-label={__('3D Model Controls', 'model-viewer-block')}>
+						<div className="instructions-content">
+							<h4>{__('How to interact with this 3D model:', 'model-viewer-block')}</h4>
+							<ul>
+								<li><strong>{__('Mouse:', 'model-viewer-block')}</strong> {__('Click and drag to rotate • Scroll to zoom • Right-click and drag to pan', 'model-viewer-block')}</li>
+								<li><strong>{__('Touch:', 'model-viewer-block')}</strong> {__('Tap and drag to rotate • Pinch to zoom • Two-finger drag to pan', 'model-viewer-block')}</li>
+								<li><strong>{__('Keyboard:', 'model-viewer-block')}</strong> {__('Arrow keys to rotate • page up/down to zoom', 'model-viewer-block')}</li>
+							</ul>
+						</div>
+					</div>
+				)}
 				<model-viewer
 					src={src}
 					alt={alt || __('3D Model', 'model-viewer-block')}
@@ -258,6 +270,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						checked={arMode}
 						onChange={(value) => setAttributes({ arMode: value })}
 						help={__('Enable augmented reality viewing on supported devices', 'model-viewer-block')}
+					/>
+					<ToggleControl
+						label={__('Show Control Instructions', 'model-viewer-block')}
+						checked={showInstructions}
+						onChange={(value) => setAttributes({ showInstructions: value })}
+						help={__('Display instructions on how to interact with the 3D model', 'model-viewer-block')}
 					/>
 				</PanelBody>
 
