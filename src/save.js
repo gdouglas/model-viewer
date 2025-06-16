@@ -246,8 +246,8 @@ export default function save( { attributes } ) {
 							className="model-viewer-reset-btn"
 							style={{
 								position: 'absolute',
-								top: '12px',
-								right: showFullscreenButton ? '68px' : '12px',
+								bottom: '12px',
+								right: '12px',
 								background: 'rgba(0, 0, 0, 0.7)',
 								color: 'white',
 								border: 'none',

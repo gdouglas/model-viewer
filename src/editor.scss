@@ -233,8 +233,8 @@
 		// Reset button in editor
 		.model-viewer-reset-btn--editor {
 			position: absolute;
-			top: 12px;
-			right: 60px; // Position to the left of fullscreen button
+			bottom: 12px;
+			right: 12px;
 			background: rgba(0, 0, 0, 0.7);
 			color: white;
 			border: none;
