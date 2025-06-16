@@ -43,19 +43,49 @@ function model_viewer_block_load_textdomain() {
 add_action( 'init', 'model_viewer_block_load_textdomain' );
 
 /**
- * Enqueue Google Model Viewer script in frontend
+ * Enqueue scripts for the model viewer block
  */
 function model_viewer_block_enqueue_scripts() {
 	if ( has_block( 'model-viewer-block/model-viewer' ) ) {
-		// Add the script tag directly with type="module" since wp_enqueue_script doesn't handle ES modules well
-		add_action( 'wp_head', 'model_viewer_block_add_module_script' );
+		// Enqueue Google Model Viewer as a module
+		wp_enqueue_script(
+			'google-model-viewer',
+			'https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js',
+			array(),
+			'3.4.0',
+			array(
+				'strategy' => 'defer',
+				'in_footer' => true
+			)
+		);
+		
+		// Add module type attribute
+		add_filter( 'script_loader_tag', 'model_viewer_block_add_module_type', 10, 3 );
+		
+		// Enqueue our frontend JavaScript
+		wp_enqueue_script(
+			'model-viewer-block-frontend',
+			plugin_dir_url( __FILE__ ) . 'src/frontend.js',
+			array(),
+			'1.0.0',
+			array(
+				'strategy' => 'defer',
+				'in_footer' => true
+			)
+		);
+		
+		// Add module type to our frontend script too
+		add_filter( 'script_loader_tag', 'model_viewer_block_add_module_type', 10, 3 );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'model_viewer_block_enqueue_scripts' );
 
 /**
- * Add Google Model Viewer script tag with proper module type
+ * Add type="module" to specific scripts
  */
-function model_viewer_block_add_module_script() {
-	echo '<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>' . "\n";
+function model_viewer_block_add_module_type( $tag, $handle, $src ) {
+	if ( in_array( $handle, array( 'google-model-viewer', 'model-viewer-block-frontend' ), true ) ) {
+		$tag = str_replace( '<script ', '<script type="module" ', $tag );
+	}
+	return $tag;
 } 
