@@ -32,8 +32,7 @@ export default function save( { attributes } ) {
 		autoRotate,
 		cameraControls,
 		arMode,
-		loading,
-		reveal,
+		loadingMode,
 		showInstructions
 	} = attributes;
 
@@ -55,8 +54,13 @@ export default function save( { attributes } ) {
 		}
 	};
 
+	// Map loadingMode to internal loading and reveal attributes
+	const loading = loadingMode === 'auto' ? 'eager' : 'lazy';
+	const reveal = loadingMode === 'auto' ? 'auto' : 'manual';
+
 	// Add optional attributes only if they're set
-	if ( poster ) {
+	// Don't set poster attribute when using interaction mode (we handle it via slot)
+	if ( poster && loadingMode !== 'interaction' ) {
 		modelViewerProps.poster = poster;
 	}
 	
@@ -94,6 +98,10 @@ export default function save( { attributes } ) {
 		...accessibilityProps,
 	};
 
+	// Generate unique ID for this model viewer instance
+	const modelViewerId = `model-viewer-${Math.random().toString(36).substr(2, 9)}`;
+	const buttonId = `button-load-${Math.random().toString(36).substr(2, 9)}`;
+
 	return (
 		<div { ...blockProps }>
 			{ showInstructions && cameraControls && (
@@ -108,7 +116,7 @@ export default function save( { attributes } ) {
 					</div>
 				</div>
 			) }
-			<model-viewer { ...allModelViewerProps }>
+			<model-viewer id={modelViewerId} { ...allModelViewerProps }>
 				<div 
 					slot="fallback"
 					style={{
@@ -130,7 +138,63 @@ export default function save( { attributes } ) {
 					</p>
 				</div>
 				
-				{ ! poster && (
+				{ loadingMode === 'interaction' && (
+					<>
+						<div 
+							slot="poster"
+							style={{
+								position: 'absolute',
+								left: '0',
+								right: '0',
+								top: '0',
+								bottom: '0',
+								backgroundImage: poster ? `url(${poster})` : 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+								backgroundSize: poster ? 'contain' : 'cover',
+								backgroundRepeat: 'no-repeat',
+								backgroundPosition: 'center',
+								border: !poster ? '2px dashed #dee2e6' : 'none'
+							}}
+						/>
+						<button
+							id={buttonId}
+							slot="poster"
+							style={{
+								backgroundColor: '#007cba',
+								color: 'white',
+								cursor: 'pointer',
+								borderRadius: '8px',
+								border: 'none',
+								display: 'inline-flex',
+								alignItems: 'center',
+								gap: '8px',
+								padding: '12px 20px',
+								fontSize: '16px',
+								fontWeight: '600',
+								boxShadow: '0 4px 12px rgba(0, 124, 186, 0.3), 0 2px 6px rgba(0, 0, 0, 0.15)',
+								position: 'absolute',
+								left: '50%',
+								top: '50%',
+								transform: 'translate(-50%, -50%)',
+								zIndex: '100',
+								transition: 'all 0.2s ease'
+							}}
+							onMouseOver={(e) => {
+								e.target.style.backgroundColor = '#005a87';
+								e.target.style.transform = 'translate(-50%, -50%) scale(1.05)';
+							}}
+							onMouseOut={(e) => {
+								e.target.style.backgroundColor = '#007cba';
+								e.target.style.transform = 'translate(-50%, -50%) scale(1)';
+							}}
+							aria-label="Load 3D model"
+						>
+							<span style={{ fontSize: '20px' }}>▶️</span>
+							Load 3D Model
+						</button>
+					</>
+				) }
+				
+				{ ! poster && loadingMode !== 'interaction' && (
 					<div 
 						slot="poster" 
 						style={{
@@ -147,6 +211,24 @@ export default function save( { attributes } ) {
 					</div>
 				) }
 			</model-viewer>
+			
+			{ loadingMode === 'interaction' && (
+				<script
+					dangerouslySetInnerHTML={{
+						__html: `
+							document.addEventListener('DOMContentLoaded', function() {
+								const button = document.getElementById('${buttonId}');
+								const modelViewer = document.getElementById('${modelViewerId}');
+								if (button && modelViewer) {
+									button.addEventListener('click', function() {
+										modelViewer.dismissPoster();
+									});
+								}
+							});
+						`
+					}}
+				/>
+			) }
 		</div>
 	);
 } 

@@ -54,15 +54,10 @@
 			"type": "boolean",
 			"default": false
 		},
-		"loading": {
+		"loadingMode": {
 			"type": "string",
 			"default": "auto",
-			"enum": ["auto", "lazy", "eager"]
-		},
-		"reveal": {
-			"type": "string",
-			"default": "auto",
-			"enum": ["auto", "interaction", "manual"]
+			"enum": ["auto", "interaction"]
 		},
 		"showControls": {
 			"type": "boolean",

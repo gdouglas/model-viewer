@@ -58,8 +58,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		autoRotate,
 		cameraControls,
 		arMode,
-		loading,
-		reveal,
+		loadingMode,
 		showControls,
 		showInstructions
 	} = attributes;
@@ -136,6 +135,20 @@ export default function Edit( { attributes, setAttributes } ) {
 						{__('Error loading 3D model. Please check the file format and try again.', 'model-viewer-block')}
 					</Notice>
 				)}
+				{loadingMode === 'interaction' && (
+					<div className="model-viewer-reveal-notice" style={{
+						background: '#e3f2fd',
+						border: '1px solid #2196f3',
+						borderRadius: '4px',
+						padding: '12px',
+						marginBottom: '12px',
+						color: '#1565c0',
+						fontSize: '14px'
+					}}>
+						<strong>{__('Loading Mode: Interaction', 'model-viewer-block')}</strong><br />
+						{__('On the frontend, users will need to click the button to load the 3D model', 'model-viewer-block')}
+					</div>
+				)}
 				{showInstructions && cameraControls && (
 					<div className="model-viewer-instructions" role="region" aria-label={__('3D Model Controls', 'model-viewer-block')}>
 						<div className="instructions-content">
@@ -160,8 +173,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					auto-rotate={autoRotate}
 					camera-controls={cameraControls}
 					ar={arMode}
-					loading={loading}
-					reveal={reveal}
+					loading={loadingMode === 'auto' ? 'eager' : 'lazy'}
+					reveal={loadingMode === 'auto' ? 'auto' : 'manual'}
 					onLoad={() => setIsLoading(false)}
 					onError={() => {
 						setIsLoading(false);
@@ -279,28 +292,20 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				<PanelBody title={__('Loading Settings', 'model-viewer-block')} initialOpen={false}>
+				<PanelBody title={__('Loading Behavior', 'model-viewer-block')} initialOpen={false}>
 					<SelectControl
-						label={__('Loading', 'model-viewer-block')}
-						value={loading}
+						label={__('Loading Mode', 'model-viewer-block')}
+						value={loadingMode}
 						options={[
 							{ label: __('Auto', 'model-viewer-block'), value: 'auto' },
-							{ label: __('Lazy', 'model-viewer-block'), value: 'lazy' },
-							{ label: __('Eager', 'model-viewer-block'), value: 'eager' }
+							{ label: __('Interaction', 'model-viewer-block'), value: 'interaction' }
 						]}
-						onChange={(value) => setAttributes({ loading: value })}
-						help={__('Control when the model loads', 'model-viewer-block')}
-					/>
-					<SelectControl
-						label={__('Reveal', 'model-viewer-block')}
-						value={reveal}
-						options={[
-							{ label: __('Auto', 'model-viewer-block'), value: 'auto' },
-							{ label: __('Interaction', 'model-viewer-block'), value: 'interaction' },
-							{ label: __('Manual', 'model-viewer-block'), value: 'manual' }
-						]}
-						onChange={(value) => setAttributes({ reveal: value })}
-						help={__('Control when the model is revealed', 'model-viewer-block')}
+						onChange={(value) => setAttributes({ loadingMode: value })}
+						help={
+							loadingMode === 'interaction' 
+								? __('Model will only load when user clicks the "Load 3D Model" button. Uses lazy loading for better performance.', 'model-viewer-block')
+								: __('Model will load and display automatically when the page loads. Uses eager loading.', 'model-viewer-block')
+						}
 					/>
 				</PanelBody>
 			</InspectorControls>

@@ -25,6 +25,7 @@
 		width: 100%;
 		min-height: 200px;
 		background-color: transparent;
+		position: relative;
 		
 		// Focus styles for accessibility (WCAG AA)
 		&:focus {
@@ -41,6 +42,24 @@
 		@media (prefers-reduced-motion: reduce) {
 			& {
 				--model-viewer-transition-duration: 0s;
+			}
+		}
+
+		// Button styling for interaction mode
+		button[slot="poster"] {
+			transition: all 0.2s ease;
+			
+			&:hover {
+				transform: translate(-50%, -50%) scale(1.05) !important;
+			}
+			
+			&:active {
+				transform: translate(-50%, -50%) scale(0.98) !important;
+			}
+			
+			&:focus {
+				outline: 2px solid #0073aa;
+				outline-offset: 2px;
 			}
 		}
 	}
