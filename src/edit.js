@@ -60,7 +60,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		arMode,
 		loadingMode,
 		showControls,
-		showInstructions
+		showInstructions,
+		showFullscreenButton
 	} = attributes;
 
 	const [isLoading, setIsLoading] = useState(false);
@@ -149,27 +150,62 @@ export default function Edit( { attributes, setAttributes } ) {
 						{__('On the frontend, users will need to click the button to load the 3D model', 'model-viewer-block')}
 					</div>
 				)}
-				<model-viewer
-					src={src}
-					alt={alt || __('3D Model', 'model-viewer-block')}
-					poster={poster}
-					style={{ 
-						width: width,
-						height: height,
-						display: hasError ? 'none' : 'block'
-					}}
-					auto-rotate={autoRotate}
-					camera-controls={cameraControls}
-					ar={arMode}
-					loading={loadingMode === 'auto' ? 'eager' : 'lazy'}
-					reveal={loadingMode === 'auto' ? 'auto' : 'manual'}
-					onLoad={() => setIsLoading(false)}
-					onError={() => {
-						setIsLoading(false);
-						setHasError(true);
-					}}
-					onModelLoad={() => setIsLoading(false)}
-				></model-viewer>
+				<div className="model-viewer-wrapper" style={{ position: 'relative' }}>
+					<model-viewer
+						src={src}
+						alt={alt || __('3D Model', 'model-viewer-block')}
+						poster={poster}
+						style={{ 
+							width: width,
+							height: height,
+							display: hasError ? 'none' : 'block'
+						}}
+						auto-rotate={autoRotate}
+						camera-controls={cameraControls}
+						ar={arMode}
+						loading={loadingMode === 'auto' ? 'eager' : 'lazy'}
+						reveal={loadingMode === 'auto' ? 'auto' : 'manual'}
+						onLoad={() => setIsLoading(false)}
+						onError={() => {
+							setIsLoading(false);
+							setHasError(true);
+						}}
+						onModelLoad={() => setIsLoading(false)}
+					></model-viewer>
+					{showFullscreenButton && !hasError && (
+						<button
+							className="model-viewer-fullscreen-btn"
+							style={{
+								position: 'absolute',
+								top: '12px',
+								right: '12px',
+								background: 'rgba(0, 0, 0, 0.7)',
+								color: 'white',
+								border: 'none',
+								borderRadius: '6px',
+								padding: '8px',
+								cursor: 'pointer',
+								fontSize: '16px',
+								zIndex: 1000,
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'center',
+								width: '40px',
+								height: '40px',
+								transition: 'all 0.2s ease'
+							}}
+							onClick={(e) => {
+								e.preventDefault();
+								// In editor, just show a notice that this works on frontend
+								alert(__('Fullscreen mode is available on the frontend when viewing the published content.', 'model-viewer-block'));
+							}}
+							title={__('Enter fullscreen mode', 'model-viewer-block')}
+							aria-label={__('Enter fullscreen mode', 'model-viewer-block')}
+						>
+							⛶
+						</button>
+					)}
+				</div>
 				<div className="model-viewer-actions">
 					<MediaUploadCheck>
 						<MediaUpload
@@ -289,6 +325,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						checked={showInstructions}
 						onChange={(value) => setAttributes({ showInstructions: value })}
 						help={__('Display instructions on how to interact with the 3D model', 'model-viewer-block')}
+					/>
+					<ToggleControl
+						label={__('Show Fullscreen Button', 'model-viewer-block')}
+						checked={showFullscreenButton}
+						onChange={(value) => setAttributes({ showFullscreenButton: value })}
+						help={__('Display a button to view the 3D model in fullscreen mode', 'model-viewer-block')}
 					/>
 				</PanelBody>
 

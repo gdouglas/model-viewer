@@ -66,6 +66,10 @@
 		"showInstructions": {
 			"type": "boolean",
 			"default": true
+		},
+		"showFullscreenButton": {
+			"type": "boolean",
+			"default": true
 		}
 	}
 } 

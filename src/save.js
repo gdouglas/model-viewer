@@ -33,7 +33,8 @@ export default function save( { attributes } ) {
 		cameraControls,
 		arMode,
 		loadingMode,
-		showInstructions
+		showInstructions,
+		showFullscreenButton
 	} = attributes;
 
 	const blockProps = useBlockProps.save( {
@@ -101,11 +102,13 @@ export default function save( { attributes } ) {
 	// Generate unique ID for this model viewer instance
 	const modelViewerId = `model-viewer-${Math.random().toString(36).substr(2, 9)}`;
 	const buttonId = `button-load-${Math.random().toString(36).substr(2, 9)}`;
+	const fullscreenButtonId = `button-fullscreen-${Math.random().toString(36).substr(2, 9)}`;
 
 	return (
 		<div { ...blockProps }>
 			<figure className="model-viewer-container">
-				<model-viewer id={modelViewerId} { ...allModelViewerProps }>
+				<div className="model-viewer-wrapper" style={{ position: 'relative' }}>
+					<model-viewer id={modelViewerId} { ...allModelViewerProps }>
 				<div 
 					slot="fallback"
 					style={{
@@ -199,7 +202,37 @@ export default function save( { attributes } ) {
 						<div>Loading 3D model...</div>
 					</div>
 				) }
-				</model-viewer>
+					</model-viewer>
+					{ showFullscreenButton && (
+						<button
+							id={fullscreenButtonId}
+							className="model-viewer-fullscreen-btn"
+							style={{
+								position: 'absolute',
+								top: '12px',
+								right: '12px',
+								background: 'rgba(0, 0, 0, 0.7)',
+								color: 'white',
+								border: 'none',
+								borderRadius: '6px',
+								padding: '8px',
+								cursor: 'pointer',
+								fontSize: '16px',
+								zIndex: 1000,
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'center',
+								width: '40px',
+								height: '40px',
+								transition: 'all 0.2s ease'
+							}}
+							title="Enter fullscreen mode"
+							aria-label="Enter fullscreen mode"
+						>
+							⛶
+						</button>
+					) }
+				</div>
 				{ showInstructions && cameraControls && (
 					<figcaption className="model-viewer-instructions">
 						<div className="instructions-content">
@@ -214,23 +247,183 @@ export default function save( { attributes } ) {
 				) }
 			</figure>
 			
-			{ loadingMode === 'interaction' && (
-				<script
-					dangerouslySetInnerHTML={{
-						__html: `
-							document.addEventListener('DOMContentLoaded', function() {
-								const button = document.getElementById('${buttonId}');
-								const modelViewer = document.getElementById('${modelViewerId}');
-								if (button && modelViewer) {
-									button.addEventListener('click', function() {
-										modelViewer.dismissPoster();
-									});
-								}
-							});
-						`
-					}}
-				/>
-			) }
+			<script
+				dangerouslySetInnerHTML={{
+					__html: `
+						document.addEventListener('DOMContentLoaded', function() {
+							// Wrap in IIFE to avoid variable conflicts between multiple blocks
+							(function() {
+								// Declare all elements once at the top of the scope
+								const modelViewerEl = document.getElementById('${modelViewerId}');
+								${loadingMode === 'interaction' ? `const loadButton = document.getElementById('${buttonId}');` : ''}
+								${showFullscreenButton ? `const fullscreenBtn = document.getElementById('${fullscreenButtonId}');` : ''}
+								${showFullscreenButton ? `const wrapperEl = modelViewerEl ? modelViewerEl.closest('.model-viewer-wrapper') : null;` : ''}
+								
+								${loadingMode === 'interaction' ? `
+									// Interaction mode functionality
+									if (loadButton && modelViewerEl) {
+										loadButton.addEventListener('click', function() {
+											modelViewerEl.dismissPoster();
+										});
+									}
+								` : ''}
+								
+								${showFullscreenButton ? `
+									// Fullscreen functionality
+									if (fullscreenBtn && wrapperEl && modelViewerEl) {
+										let isFullscreenActive = false;
+										
+										// Check if Fullscreen API is supported
+										const fullscreenSupported = !!(
+											document.fullscreenEnabled ||
+											document.webkitFullscreenEnabled ||
+											document.mozFullScreenEnabled ||
+											document.msFullscreenEnabled
+										);
+										
+										// If Fullscreen API is not supported, hide the button
+										if (!fullscreenSupported) {
+											fullscreenBtn.style.display = 'none';
+											return;
+										}
+										
+										function updateFullscreenBtn() {
+											if (isFullscreenActive) {
+												fullscreenBtn.innerHTML = '⛶';
+												fullscreenBtn.title = 'Exit fullscreen mode';
+												fullscreenBtn.setAttribute('aria-label', 'Exit fullscreen mode');
+											} else {
+												fullscreenBtn.innerHTML = '⛶';
+												fullscreenBtn.title = 'Enter fullscreen mode';
+												fullscreenBtn.setAttribute('aria-label', 'Enter fullscreen mode');
+											}
+										}
+										
+										function enterFullscreenMode() {
+											// If in interaction mode and model hasn't loaded yet, load it first
+											if (modelViewerEl.hasAttribute('reveal') && modelViewerEl.getAttribute('reveal') === 'manual') {
+												const posterSlot = modelViewerEl.querySelector('[slot="poster"]');
+												if (posterSlot && posterSlot.style.display !== 'none') {
+													modelViewerEl.dismissPoster();
+												}
+											}
+											
+											if (wrapperEl.requestFullscreen) {
+												wrapperEl.requestFullscreen();
+											} else if (wrapperEl.webkitRequestFullscreen) {
+												wrapperEl.webkitRequestFullscreen();
+											} else if (wrapperEl.msRequestFullscreen) {
+												wrapperEl.msRequestFullscreen();
+											}
+										}
+										
+										function exitFullscreenMode() {
+											if (document.exitFullscreen) {
+												document.exitFullscreen();
+											} else if (document.webkitExitFullscreen) {
+												document.webkitExitFullscreen();
+											} else if (document.msExitFullscreen) {
+												document.msExitFullscreen();
+											}
+										}
+										
+										fullscreenBtn.addEventListener('click', function() {
+											if (isFullscreenActive) {
+												exitFullscreenMode();
+											} else {
+												enterFullscreenMode();
+											}
+										});
+										
+										// Store original styles for restoration
+										let originalModelViewerStyle = null;
+										
+										// Listen for fullscreen changes specific to this wrapper
+										function handleFullscreenChange() {
+											isFullscreenActive = document.fullscreenElement === wrapperEl;
+											// Add/remove CSS class for fallback styling
+											if (isFullscreenActive) {
+												wrapperEl.classList.add('is-fullscreen');
+												// Store original styles and apply fullscreen styles
+												if (!originalModelViewerStyle) {
+													originalModelViewerStyle = {
+														width: modelViewerEl.style.width,
+														height: modelViewerEl.style.height
+													};
+												}
+												modelViewerEl.style.width = '100vw';
+												modelViewerEl.style.height = '100vh';
+											} else {
+												wrapperEl.classList.remove('is-fullscreen');
+												// Restore original styles
+												if (originalModelViewerStyle) {
+													modelViewerEl.style.width = originalModelViewerStyle.width;
+													modelViewerEl.style.height = originalModelViewerStyle.height;
+												}
+											}
+											updateFullscreenBtn();
+										}
+										
+										function handleWebkitFullscreenChange() {
+											isFullscreenActive = document.webkitFullscreenElement === wrapperEl;
+											// Add/remove CSS class for fallback styling
+											if (isFullscreenActive) {
+												wrapperEl.classList.add('is-fullscreen');
+												// Store original styles and apply fullscreen styles
+												if (!originalModelViewerStyle) {
+													originalModelViewerStyle = {
+														width: modelViewerEl.style.width,
+														height: modelViewerEl.style.height
+													};
+												}
+												modelViewerEl.style.width = '100vw';
+												modelViewerEl.style.height = '100vh';
+											} else {
+												wrapperEl.classList.remove('is-fullscreen');
+												// Restore original styles
+												if (originalModelViewerStyle) {
+													modelViewerEl.style.width = originalModelViewerStyle.width;
+													modelViewerEl.style.height = originalModelViewerStyle.height;
+												}
+											}
+											updateFullscreenBtn();
+										}
+										
+										function handleMsFullscreenChange() {
+											isFullscreenActive = document.msFullscreenElement === wrapperEl;
+											// Add/remove CSS class for fallback styling
+											if (isFullscreenActive) {
+												wrapperEl.classList.add('is-fullscreen');
+												// Store original styles and apply fullscreen styles
+												if (!originalModelViewerStyle) {
+													originalModelViewerStyle = {
+														width: modelViewerEl.style.width,
+														height: modelViewerEl.style.height
+													};
+												}
+												modelViewerEl.style.width = '100vw';
+												modelViewerEl.style.height = '100vh';
+											} else {
+												wrapperEl.classList.remove('is-fullscreen');
+												// Restore original styles
+												if (originalModelViewerStyle) {
+													modelViewerEl.style.width = originalModelViewerStyle.width;
+													modelViewerEl.style.height = originalModelViewerStyle.height;
+												}
+											}
+											updateFullscreenBtn();
+										}
+										
+										document.addEventListener('fullscreenchange', handleFullscreenChange);
+										document.addEventListener('webkitfullscreenchange', handleWebkitFullscreenChange);
+										document.addEventListener('msfullscreenchange', handleMsFullscreenChange);
+									}
+								` : ''}
+							})();
+						});
+					`
+				}}
+			/>
 		</div>
 	);
 } 

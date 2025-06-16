@@ -204,4 +204,20 @@ msgstr ""
 
 #: src/edit.js:124
 msgid "3D Model Controls"
+msgstr ""
+
+#: src/edit.js:240
+msgid "Show Fullscreen Button"
+msgstr ""
+
+#: src/edit.js:243
+msgid "Display a button to view the 3D model in fullscreen mode"
+msgstr ""
+
+#: src/edit.js:285
+msgid "Fullscreen mode is available on the frontend when viewing the published content."
+msgstr ""
+
+#: src/edit.js:287
+msgid "Enter fullscreen mode"
 msgstr "" 
