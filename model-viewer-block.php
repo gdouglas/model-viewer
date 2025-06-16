@@ -31,6 +31,119 @@ function model_viewer_block_init() {
 add_action( 'init', 'model_viewer_block_init' );
 
 /**
+ * Plugin activation hook
+ */
+function model_viewer_block_activate() {
+	// Add GLB file support to WordPress
+	model_viewer_block_add_glb_support();
+}
+register_activation_hook( __FILE__, 'model_viewer_block_activate' );
+
+/**
+ * Plugin deactivation hook
+ */
+function model_viewer_block_deactivate() {
+	// Remove GLB file support from WordPress
+	model_viewer_block_remove_glb_support();
+}
+register_deactivation_hook( __FILE__, 'model_viewer_block_deactivate' );
+
+/**
+ * Add GLB and GLTF file support to WordPress uploads
+ */
+function model_viewer_block_add_glb_support() {
+	// Get current allowed file types
+	$allowed_types = get_option( 'upload_filetypes', '' );
+	
+	// Add GLB if not already present
+	if ( strpos( $allowed_types, 'glb' ) === false ) {
+		$allowed_types = trim( $allowed_types );
+		if ( ! empty( $allowed_types ) ) {
+			$allowed_types .= ' glb';
+		} else {
+			$allowed_types = 'glb';
+		}
+	}
+	
+	// Add GLTF if not already present
+	if ( strpos( $allowed_types, 'gltf' ) === false ) {
+		$allowed_types = trim( $allowed_types );
+		if ( ! empty( $allowed_types ) ) {
+			$allowed_types .= ' gltf';
+		} else {
+			$allowed_types = 'gltf';
+		}
+	}
+	
+	update_option( 'upload_filetypes', $allowed_types );
+	
+	// Add filter to allow 3D model files in media uploads
+	add_filter( 'upload_mimes', 'model_viewer_block_allow_glb_upload' );
+	add_filter( 'wp_check_filetype_and_ext', 'model_viewer_block_check_glb_filetype', 10, 5 );
+}
+
+/**
+ * Remove GLB and GLTF file support from WordPress uploads
+ */
+function model_viewer_block_remove_glb_support() {
+	// Get current allowed file types
+	$allowed_types = get_option( 'upload_filetypes', '' );
+	
+	// Remove GLB if present
+	if ( strpos( $allowed_types, 'glb' ) !== false ) {
+		$allowed_types = str_replace( array( ' glb', 'glb ' ), '', $allowed_types );
+		$allowed_types = str_replace( 'glb', '', $allowed_types );
+	}
+	
+	// Remove GLTF if present
+	if ( strpos( $allowed_types, 'gltf' ) !== false ) {
+		$allowed_types = str_replace( array( ' gltf', 'gltf ' ), '', $allowed_types );
+		$allowed_types = str_replace( 'gltf', '', $allowed_types );
+	}
+	
+	$allowed_types = trim( $allowed_types );
+	update_option( 'upload_filetypes', $allowed_types );
+	
+	// Remove filters
+	remove_filter( 'upload_mimes', 'model_viewer_block_allow_glb_upload' );
+	remove_filter( 'wp_check_filetype_and_ext', 'model_viewer_block_check_glb_filetype' );
+}
+
+/**
+ * Allow 3D model files to be uploaded
+ */
+function model_viewer_block_allow_glb_upload( $mimes ) {
+	$mimes['glb'] = 'model/gltf-binary';
+	$mimes['gltf'] = 'model/gltf+json';
+	return $mimes;
+}
+
+/**
+ * Fix 3D model file type detection
+ */
+function model_viewer_block_check_glb_filetype( $data, $file, $filename, $mimes, $real_mime ) {
+	if ( ! empty( $data['ext'] ) && ! empty( $data['type'] ) ) {
+		return $data;
+	}
+
+	$wp_file_type = wp_check_filetype( $filename, $mimes );
+
+	// Check for GLB files
+	if ( 'glb' === $wp_file_type['ext'] ) {
+		$data['ext'] = 'glb';
+		$data['type'] = 'model/gltf-binary';
+	}
+
+	// Check for GLTF files
+	if ( 'gltf' === $wp_file_type['ext'] ) {
+		$data['ext'] = 'gltf';
+		$data['type'] = 'model/gltf+json';
+	}
+
+	return $data;
+}
+
+/**
  * Load plugin textdomain for internationalization.
  */
 function model_viewer_block_load_textdomain() {
@@ -41,6 +154,15 @@ function model_viewer_block_load_textdomain() {
 	);
 }
 add_action( 'init', 'model_viewer_block_load_textdomain' );
+
+/**
+ * Enable GLB file uploads when plugin is active
+ */
+function model_viewer_block_enable_glb_uploads() {
+	add_filter( 'upload_mimes', 'model_viewer_block_allow_glb_upload' );
+	add_filter( 'wp_check_filetype_and_ext', 'model_viewer_block_check_glb_filetype', 10, 5 );
+}
+add_action( 'init', 'model_viewer_block_enable_glb_uploads' );
 
 /**
  * Enqueue scripts for the model viewer block
