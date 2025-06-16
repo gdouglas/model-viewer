@@ -34,7 +34,8 @@ export default function save( { attributes } ) {
 		arMode,
 		loadingMode,
 		showInstructions,
-		showFullscreenButton
+		showFullscreenButton,
+		showResetButton
 	} = attributes;
 
 	const blockProps = useBlockProps.save( {
@@ -227,6 +228,39 @@ export default function save( { attributes } ) {
 							aria-label="Enter fullscreen mode"
 						>
 							⛶
+						</button>
+					) }
+					
+					{ showResetButton && cameraControls && (
+						<button
+							data-reset-button
+							className="model-viewer-reset-btn"
+							style={{
+								position: 'absolute',
+								top: '12px',
+								right: showFullscreenButton ? '68px' : '12px',
+								background: 'rgba(0, 0, 0, 0.7)',
+								color: 'white',
+								border: 'none',
+								borderRadius: '6px',
+								padding: '8px 12px',
+								cursor: 'pointer',
+								fontSize: '12px',
+								fontWeight: '600',
+								zIndex: 1000,
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'center',
+								width: 'auto',
+								height: 'auto',
+								minWidth: '80px',
+								whiteSpace: 'nowrap',
+								transition: 'all 0.2s ease'
+							}}
+							title="Reset camera position"
+							aria-label="Reset camera position"
+						>
+							Reset View
 						</button>
 					) }
 				</div>

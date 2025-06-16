@@ -9,10 +9,12 @@ class ModelViewerBlock {
 		this.modelViewer = element.querySelector('model-viewer');
 		this.loadButton = element.querySelector('[data-load-button]');
 		this.fullscreenButton = element.querySelector('[data-fullscreen-button]');
+		this.resetButton = element.querySelector('[data-reset-button]');
 		this.wrapper = element.querySelector('.model-viewer-wrapper');
 		
 		this.isFullscreenActive = false;
 		this.originalStyles = null;
+		this.initialCameraState = null;
 		
 		this.init();
 	}
@@ -25,6 +27,13 @@ class ModelViewerBlock {
 		if (this.fullscreenButton) {
 			this.setupFullscreen();
 		}
+		
+		if (this.resetButton) {
+			this.setupReset();
+		}
+		
+		// Store initial camera state when model loads
+		this.storeInitialCameraState();
 	}
 	
 	setupInteractionMode() {
@@ -183,6 +192,146 @@ class ModelViewerBlock {
 		const title = this.isFullscreenActive ? 'Exit fullscreen mode' : 'Enter fullscreen mode';
 		this.fullscreenButton.title = title;
 		this.fullscreenButton.setAttribute('aria-label', title);
+	}
+	
+	setupReset() {
+		this.resetButton.addEventListener('click', () => {
+			this.resetCamera();
+		});
+	}
+	
+	storeInitialCameraState() {
+		if (this.modelViewer) {
+			// Wait for model to load before storing initial state
+			const storeState = () => {
+				try {
+					this.initialCameraState = {
+						orbit: this.modelViewer.getCameraOrbit ? this.modelViewer.getCameraOrbit() : null,
+						target: this.modelViewer.getCameraTarget ? this.modelViewer.getCameraTarget() : null,
+						fov: this.modelViewer.getFieldOfView ? this.modelViewer.getFieldOfView() : null,
+						// Store attribute values as backup
+						orbitAttr: this.modelViewer.getAttribute('camera-orbit'),
+						targetAttr: this.modelViewer.getAttribute('camera-target'),
+						fovAttr: this.modelViewer.getAttribute('field-of-view')
+					};
+				} catch (e) {
+					// Fallback to attribute-based storage
+					this.initialCameraState = {
+						orbitAttr: this.modelViewer.getAttribute('camera-orbit'),
+						targetAttr: this.modelViewer.getAttribute('camera-target'),
+						fovAttr: this.modelViewer.getAttribute('field-of-view')
+					};
+				}
+			};
+			
+			// Store state when model loads
+			this.modelViewer.addEventListener('load', storeState);
+			this.modelViewer.addEventListener('model-visibility', storeState);
+			
+			// Also store immediately if model is already loaded
+			if (this.modelViewer.loaded) {
+				storeState();
+			}
+		}
+	}
+	
+	resetCamera() {
+		// Reset ALL camera interactions to initial state
+		if (this.modelViewer) {
+			// Method 1: Force reset using attribute manipulation
+			// Set camera-orbit to auto to reset rotation
+			this.modelViewer.setAttribute('camera-orbit', 'auto auto auto');
+			this.modelViewer.setAttribute('camera-target', 'auto auto auto');
+			this.modelViewer.setAttribute('field-of-view', 'auto');
+			
+			// Force a re-render by triggering model-viewer's internal update
+			setTimeout(() => {
+				// Method 2: Remove attributes to force default behavior
+				this.modelViewer.removeAttribute('camera-orbit');
+				this.modelViewer.removeAttribute('camera-target');
+				this.modelViewer.removeAttribute('field-of-view');
+			}, 10);
+			
+			// Method 3: Reset turntable rotation
+			if (typeof this.modelViewer.resetTurntableRotation === 'function') {
+				this.modelViewer.resetTurntableRotation();
+			}
+			
+			// Method 4: Jump to goal state
+			if (typeof this.modelViewer.jumpCameraToGoal === 'function') {
+				this.modelViewer.jumpCameraToGoal();
+			}
+			
+			// Method 5: Force re-framing
+			if (typeof this.modelViewer.updateFraming === 'function') {
+				this.modelViewer.updateFraming();
+			}
+			
+			// Method 6: Access and reset internal camera state
+			try {
+				// Force a complete scene update
+				if (this.modelViewer.model && this.modelViewer.model.scene) {
+					this.modelViewer.model.scene.updateMatrixWorld(true);
+				}
+				
+				// Force render
+				if (this.modelViewer.renderer) {
+					this.modelViewer.renderer.render(this.modelViewer.model.scene, this.modelViewer.camera);
+				}
+			} catch (e) {
+				// Ignore errors from internal API access
+			}
+			
+			// Method 7: Force complete reset by re-initializing the model-viewer
+			try {
+				const currentSrc = this.modelViewer.getAttribute('src');
+				if (currentSrc) {
+					// Temporarily remove src to force re-initialization
+					this.modelViewer.removeAttribute('src');
+					
+					// Wait a moment then restore src
+					setTimeout(() => {
+						this.modelViewer.setAttribute('src', currentSrc);
+					}, 50);
+				}
+			} catch (e) {
+				// Ignore errors from re-initialization
+			}
+		}
+		
+		// Method 8: Force a complete reset by dispatching events
+		setTimeout(() => {
+			if (this.modelViewer) {
+				// Dispatch multiple events to trigger internal resets
+				this.modelViewer.dispatchEvent(new CustomEvent('camera-change'));
+				this.modelViewer.dispatchEvent(new CustomEvent('load'));
+				this.modelViewer.dispatchEvent(new CustomEvent('model-visibility'));
+				
+				// Force recalculation of the default camera position
+				if (typeof this.modelViewer.updateFraming === 'function') {
+					this.modelViewer.updateFraming();
+				}
+			}
+		}, 150);
+		
+		// Provide visual feedback
+		this.showResetFeedback();
+	}
+	
+	showResetFeedback() {
+		// Temporarily change the button to show feedback
+		const originalContent = this.resetButton.innerHTML;
+		const originalBackground = this.resetButton.style.backgroundColor;
+		
+		this.resetButton.innerHTML = 'Reset ✓';
+		this.resetButton.style.backgroundColor = 'rgba(34, 197, 94, 0.9)';
+		this.resetButton.disabled = true;
+		
+		setTimeout(() => {
+			this.resetButton.innerHTML = originalContent;
+			this.resetButton.style.backgroundColor = originalBackground || 'rgba(0, 0, 0, 0.7)';
+			this.resetButton.disabled = false;
+		}, 800);
 	}
 }
 

@@ -220,4 +220,24 @@ msgstr ""
 
 #: src/edit.js:287
 msgid "Enter fullscreen mode"
+msgstr ""
+
+#: src/edit.js:XXX
+msgid "Show Reset Camera Button"
+msgstr ""
+
+#: src/edit.js:XXX
+msgid "Display a button to reset the camera to its default position"
+msgstr ""
+
+#: src/edit.js:XXX
+msgid "Camera reset is available on the frontend when viewing the published content."
+msgstr ""
+
+#: src/edit.js:XXX
+msgid "Reset camera position"
+msgstr ""
+
+#: src/edit.js:XXX
+msgid "Reset View"
 msgstr "" 

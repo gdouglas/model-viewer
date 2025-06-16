@@ -95,6 +95,32 @@ const FullscreenButton = ({ showFullscreenButton, hasError }) => {
 };
 
 /**
+ * Reset Camera Button Component
+ */
+const ResetButton = ({ showResetButton, hasError, cameraControls }) => {
+	const handleResetClick = useCallback((e) => {
+		e.preventDefault();
+		// In editor, just show a notice that this works on frontend
+		alert(__('Camera reset is available on the frontend when viewing the published content.', 'model-viewer-block'));
+	}, []);
+
+	if (!showResetButton || hasError || !cameraControls) {
+		return null;
+	}
+
+	return (
+		<button
+			className="model-viewer-reset-btn model-viewer-reset-btn--editor"
+			onClick={handleResetClick}
+			title={__('Reset camera position', 'model-viewer-block')}
+			aria-label={__('Reset camera position', 'model-viewer-block')}
+		>
+			{__('Reset View', 'model-viewer-block')}
+		</button>
+	);
+};
+
+/**
  * Model Actions Component
  */
 const ModelActions = ({ onSelectModel, onRemoveModel, src }) => (
@@ -199,7 +225,8 @@ const ModelViewer = ({ attributes, onSelectModel, onRemoveModel }) => {
 		arMode,
 		loadingMode,
 		showInstructions,
-		showFullscreenButton
+		showFullscreenButton,
+		showResetButton
 	} = attributes;
 
 	const [isLoading, setIsLoading] = useState(false);
@@ -254,6 +281,12 @@ const ModelViewer = ({ attributes, onSelectModel, onRemoveModel }) => {
 				<FullscreenButton 
 					showFullscreenButton={showFullscreenButton} 
 					hasError={hasError} 
+				/>
+				
+				<ResetButton 
+					showResetButton={showResetButton} 
+					hasError={hasError} 
+					cameraControls={cameraControls}
 				/>
 			</div>
 			
@@ -363,7 +396,7 @@ const DimensionsPanel = ({ attributes, setAttributes }) => {
  * Interaction Settings Panel Component
  */
 const InteractionSettingsPanel = ({ attributes, setAttributes }) => {
-	const { autoRotate, cameraControls, arMode, showInstructions, showFullscreenButton } = attributes;
+	const { autoRotate, cameraControls, arMode, showInstructions, showFullscreenButton, showResetButton } = attributes;
 
 	const handleAutoRotateChange = useCallback((value) => {
 		setAttributes({ autoRotate: value });
@@ -383,6 +416,10 @@ const InteractionSettingsPanel = ({ attributes, setAttributes }) => {
 
 	const handleShowFullscreenButtonChange = useCallback((value) => {
 		setAttributes({ showFullscreenButton: value });
+	}, [setAttributes]);
+
+	const handleShowResetButtonChange = useCallback((value) => {
+		setAttributes({ showResetButton: value });
 	}, [setAttributes]);
 
 	return (
@@ -416,6 +453,12 @@ const InteractionSettingsPanel = ({ attributes, setAttributes }) => {
 				checked={showFullscreenButton}
 				onChange={handleShowFullscreenButtonChange}
 				help={__('Display a button to view the 3D model in fullscreen mode', 'model-viewer-block')}
+			/>
+			<ToggleControl
+				label={__('Show Reset Camera Button', 'model-viewer-block')}
+				checked={showResetButton}
+				onChange={handleShowResetButtonChange}
+				help={__('Display a button to reset the camera to its default position', 'model-viewer-block')}
 			/>
 		</PanelBody>
 	);

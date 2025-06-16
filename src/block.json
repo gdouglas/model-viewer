@@ -70,6 +70,10 @@
 		"showFullscreenButton": {
 			"type": "boolean",
 			"default": true
+		},
+		"showResetButton": {
+			"type": "boolean",
+			"default": true
 		}
 	}
 } 
