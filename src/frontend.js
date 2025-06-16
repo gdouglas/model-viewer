@@ -29,8 +29,64 @@ class ModelViewerBlock {
 	
 	setupInteractionMode() {
 		this.loadButton.addEventListener('click', () => {
+			this.showLoadingState();
 			this.modelViewer.dismissPoster();
 		});
+		
+		// Listen for model-viewer specific events
+		this.modelViewer.addEventListener('load', () => {
+			this.hideLoadingState();
+		});
+		
+		this.modelViewer.addEventListener('model-visibility', (event) => {
+			if (event.detail.visible) {
+				this.hideLoadingState();
+			}
+		});
+		
+		this.modelViewer.addEventListener('error', () => {
+			this.showErrorState();
+		});
+		
+		// Also listen for poster dismiss to start loading state
+		this.modelViewer.addEventListener('poster-dismissed', () => {
+			// If we haven't shown loading state yet, show it now
+			if (!this.loadButton.disabled) {
+				this.showLoadingState();
+			}
+		});
+	}
+	
+	showLoadingState() {
+		// Change button to loading state
+		this.loadButton.innerHTML = `
+			<div class="model-viewer-spinner"></div>
+			Loading 3D Model...
+		`;
+		this.loadButton.disabled = true;
+		this.loadButton.style.cursor = 'not-allowed';
+		this.loadButton.style.opacity = '0.8';
+		this.loadButton.setAttribute('aria-label', 'Loading 3D model, please wait');
+	}
+	
+	hideLoadingState() {
+		// Hide the entire load button since model is now loaded
+		if (this.loadButton) {
+			this.loadButton.style.display = 'none';
+		}
+	}
+	
+	showErrorState() {
+		// Show error state
+		this.loadButton.innerHTML = `
+			<span style="color: #d63638;">⚠️</span>
+			Failed to Load
+		`;
+		this.loadButton.disabled = true;
+		this.loadButton.style.cursor = 'not-allowed';
+		this.loadButton.style.backgroundColor = '#f0f0f0';
+		this.loadButton.style.color = '#666';
+		this.loadButton.setAttribute('aria-label', 'Failed to load 3D model');
 	}
 	
 	setupFullscreen() {

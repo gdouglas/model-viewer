@@ -141,6 +141,33 @@
 			font-size: 14px;
 		}
 
+		// Loading spinner in editor (for consistency)
+		.model-viewer-spinner {
+			width: 16px;
+			height: 16px;
+			border: 2px solid rgba(255, 255, 255, 0.3);
+			border-radius: 50%;
+			border-top-color: #fff;
+			animation: model-viewer-spin 1s ease-in-out infinite;
+			display: inline-block;
+			flex-shrink: 0;
+		}
+
+		// Spinner animation
+		@keyframes model-viewer-spin {
+			to {
+				transform: rotate(360deg);
+			}
+		}
+
+		// Respect reduced motion preferences
+		@media (prefers-reduced-motion: reduce) {
+			.model-viewer-spinner {
+				animation: none;
+				border-top-color: rgba(255, 255, 255, 0.8);
+			}
+		}
+
 		// Model viewer wrapper for positioning
 		.model-viewer-wrapper {
 			position: relative;
