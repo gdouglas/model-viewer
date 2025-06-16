@@ -210,28 +210,48 @@
 
 	// Loading state styles
 	.model-viewer-loading {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
 		display: flex;
 		align-items: center;
 		gap: 8px;
 		color: #666;
 		font-size: 14px;
 		z-index: 1;
+		
+		// When used in button (interaction mode)
+		button & {
+			position: static;
+		}
+		
+		// When used in full-height poster
+		.model-viewer-loading-poster & {
+			position: static;
+			justify-content: center;
+		}
 	}
 
-	// Loading spinner for load button
+	// Loading spinner for load button and loading poster
 	.model-viewer-spinner {
 		width: 16px;
 		height: 16px;
-		border: 2px solid rgba(255, 255, 255, 0.3);
+		border: 2px solid rgba(102, 102, 102, 0.3);
 		border-radius: 50%;
-		border-top-color: #fff;
+		border-top-color: #666;
 		animation: model-viewer-spin 1s ease-in-out infinite;
 		display: inline-block;
 		flex-shrink: 0;
+		
+		// When used in button (interaction mode)
+		button & {
+			border: 2px solid rgba(255, 255, 255, 0.3);
+			border-top-color: #fff;
+		}
+		
+		// When used in full-height poster
+		.model-viewer-loading-poster & {
+			width: 20px;
+			height: 20px;
+			border-width: 3px;
+		}
 	}
 
 	// Spinner animation
@@ -288,6 +308,19 @@
 		}
 	}
 
+	// Hide fallback when loading poster is present
+	.model-viewer-fallback {
+		// Hide fallback when there's a loading poster (using class-based approach)
+		.model-viewer-wrapper.has-loading-poster & {
+			display: none !important;
+		}
+		
+		// Also hide when explicitly set via JavaScript
+		&.hidden-during-loading {
+			display: none !important;
+		}
+	}
+
 	// Poster/loading slot styles
 	div[slot="poster"] {
 		display: flex;
@@ -297,6 +330,20 @@
 		background-color: #f8f9fa;
 		color: #666;
 		font-size: 14px;
+	}
+
+	// Full-height loading poster when no poster image is set
+	.model-viewer-loading-poster {
+		width: 100% !important;
+		height: 100% !important;
+		min-height: 200px !important;
+		
+		// Ensure it takes the full height of the model-viewer
+		position: absolute !important;
+		top: 0 !important;
+		left: 0 !important;
+		right: 0 !important;
+		bottom: 0 !important;
 	}
 
 	// Control instructions (figcaption)

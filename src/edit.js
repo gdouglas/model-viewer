@@ -43,9 +43,11 @@ import './editor.scss';
 /**
  * Loading Notice Component
  */
-const LoadingNotice = () => (
-	<div className="model-viewer-loading">
-		<Spinner /> {__('Loading 3D model...', 'model-viewer-block')}
+const LoadingNotice = ({ isFullHeight = false }) => (
+	<div className={`model-viewer-loading ${isFullHeight ? 'model-viewer-loading-poster' : ''}`}>
+		<div className="model-viewer-loading-content">
+			<Spinner /> {__('Loading 3D model...', 'model-viewer-block')}
+		</div>
 	</div>
 );
 
@@ -258,7 +260,7 @@ const ModelViewer = ({ attributes, onSelectModel, onRemoveModel }) => {
 
 	return (
 		<figure className="model-viewer-container">
-			{isLoading && <LoadingNotice />}
+			{isLoading && <LoadingNotice isFullHeight={!poster && loadingMode !== 'interaction'} />}
 			{hasError && <ErrorNotice />}
 			{loadingMode === 'interaction' && <InteractionModeNotice />}
 			

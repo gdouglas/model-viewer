@@ -109,6 +109,7 @@ export default function save( { attributes } ) {
 					<model-viewer { ...allModelViewerProps }>
 				<div 
 					slot="fallback"
+					className="model-viewer-fallback"
 					style={{
 						display: 'flex',
 						alignItems: 'center',
@@ -187,17 +188,25 @@ export default function save( { attributes } ) {
 				{ ! poster && loadingMode !== 'interaction' && (
 					<div 
 						slot="poster" 
+						className="model-viewer-loading-poster"
 						style={{
+							position: 'absolute',
+							left: '0',
+							right: '0',
+							top: '0',
+							bottom: '0',
 							display: 'flex',
 							alignItems: 'center',
 							justifyContent: 'center',
-							minHeight: '200px',
 							backgroundColor: '#f8f9fa',
 							color: '#666',
 							fontSize: '14px'
 						}}
 					>
-						<div>Loading 3D model...</div>
+						<div className="model-viewer-loading">
+							<div className="model-viewer-spinner"></div>
+							<span>Loading 3D model...</span>
+						</div>
 					</div>
 				) }
 					</model-viewer>

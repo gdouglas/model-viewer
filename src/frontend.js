@@ -11,6 +11,8 @@ class ModelViewerBlock {
 		this.fullscreenButton = element.querySelector('[data-fullscreen-button]');
 		this.resetButton = element.querySelector('[data-reset-button]');
 		this.wrapper = element.querySelector('.model-viewer-wrapper');
+		this.loadingPoster = element.querySelector('.model-viewer-loading-poster');
+		this.fallbackContent = element.querySelector('.model-viewer-fallback');
 		
 		this.isFullscreenActive = false;
 		this.originalStyles = null;
@@ -34,6 +36,9 @@ class ModelViewerBlock {
 		
 		// Store initial camera state when model loads
 		this.storeInitialCameraState();
+		
+		// Hide fallback content if loading poster is present
+		this.hideFallbackDuringLoading();
 	}
 	
 	setupInteractionMode() {
@@ -45,16 +50,23 @@ class ModelViewerBlock {
 		// Listen for model-viewer specific events
 		this.modelViewer.addEventListener('load', () => {
 			this.hideLoadingState();
+			this.hideLoadingPoster();
 		});
 		
 		this.modelViewer.addEventListener('model-visibility', (event) => {
 			if (event.detail.visible) {
 				this.hideLoadingState();
+				this.hideLoadingPoster();
 			}
 		});
 		
 		this.modelViewer.addEventListener('error', () => {
 			this.showErrorState();
+			this.hideLoadingPoster();
+			// On error, show fallback content if browser doesn't support model-viewer
+			setTimeout(() => {
+				this.showFallbackContent();
+			}, 100);
 		});
 		
 		// Also listen for poster dismiss to start loading state
@@ -82,6 +94,36 @@ class ModelViewerBlock {
 		// Hide the entire load button since model is now loaded
 		if (this.loadButton) {
 			this.loadButton.style.display = 'none';
+		}
+	}
+	
+	hideLoadingPoster() {
+		// Hide the loading poster when model is loaded (for auto loading mode without poster)
+		if (this.loadingPoster) {
+			this.loadingPoster.style.display = 'none';
+		}
+		
+		// Show fallback content again if it was hidden
+		this.showFallbackContent();
+	}
+	
+	hideFallbackDuringLoading() {
+		// Hide fallback content when there's a loading poster to prevent brief flash
+		if (this.loadingPoster && this.fallbackContent) {
+			this.fallbackContent.classList.add('hidden-during-loading');
+			this.wrapper.classList.add('has-loading-poster');
+		}
+	}
+	
+	showFallbackContent() {
+		// Show fallback content again (in case model fails to load)
+		if (this.fallbackContent && this.loadingPoster) {
+			// Only show fallback if loading poster is hidden and model failed to load
+			const loadingPosterHidden = this.loadingPoster.style.display === 'none';
+			if (loadingPosterHidden) {
+				this.fallbackContent.classList.remove('hidden-during-loading');
+				this.wrapper.classList.remove('has-loading-poster');
+			}
 		}
 	}
 	
